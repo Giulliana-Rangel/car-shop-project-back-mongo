@@ -1,3 +1,4 @@
+import { isValidObjectId } from 'mongoose';
 import Motorcycle from '../Domains/Motorcycle';
 import IMotorcycle from '../Interfaces/IMotorcycle';
 import MotorcycleODM from '../Models/MotorcycleODM';
@@ -27,5 +28,12 @@ export default class MotorcycleService {
     const motorcycleODM = new MotorcycleODM();
     const byId = await motorcycleODM.findbyId(id);
     return this.createMotorcycleDomain(byId);
+  }
+
+  public async updateMoto(id: string, motorcycle: IMotorcycle) {
+    if (!isValidObjectId(id)) throw new Error('Invalid mongo id');
+    const motorcycleODM = new MotorcycleODM();
+    const update = await motorcycleODM.update(id, motorcycle);
+    return this.createMotorcycleDomain(update);
   }
 }
