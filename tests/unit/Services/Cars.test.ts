@@ -90,4 +90,36 @@ describe('Testing Cars route', function () {
 
     Sinon.restore();
   });
+
+  it('Should return cars update', async function () {
+    const input = {
+      model: 'Marea',
+      year: 1992,
+      color: 'Red',
+      status: true,
+      buyValue: 12.000,
+      doorsQty: 2,
+      seatsQty: 5,
+    };
+    const output = {
+      id: '634852326b35b59438fbea2f',
+      model: 'Marea',
+      year: 1992,
+      color: 'Red',
+      status: true,
+      buyValue: 12.000,
+      doorsQty: 2,
+      seatsQty: 5,
+    };
+    const id = '634852326b35b59438fbea2f';
+
+    Sinon.stub(Model, 'findByIdAndUpdate').resolves({ ...output });
+
+    const service = new CarService();
+    const result = await service.updateById(id, input);
+
+    expect(result).to.be.deep.equal(output);
+
+    Sinon.restore();
+  });
 });
