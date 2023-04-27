@@ -124,4 +124,49 @@ describe('Testing Motorcycles route', function () {
 
     Sinon.restore();
   });
+  it('Should delete a moto', async function () {
+    const id = '634852326b35b59438fbea2f';
+
+    Sinon.stub(Model, 'findByIdAndDelete').resolves(null);
+
+    const service = new MotorcycleService();
+    const result = await service.removeMoto(id);
+
+    expect(result).to.be.deep.equal(null);
+
+    Sinon.restore();
+  });
+
+  it('Exception fails: invalid id', async function () {
+    const id = 'nãoÉId';
+    const output = 'Invalid mongo id';
+
+    Sinon.stub(Model, 'findById').resolves({});
+    
+    try {
+      const service = new MotorcycleService();
+      await service.getMotoById(id);
+    } catch (error) {
+      expect((error as Error).message).to.be.deep.equal(output);
+    }
+    Sinon.restore();
+  });
+  
+  it('Exception fails: not found', async function () {
+    const idFake = '634852326b35b59438aaaaaa';
+    const output = 'Motorcycle not found';
+
+    Sinon.stub(Model, 'findById').resolves({});
+    Sinon.stub(Model, 'findByIdAndDelete').resolves({});
+
+    try {
+      const service = new MotorcycleService();
+      await service.getMotoById(idFake);
+      await service.removeMoto(idFake);
+    } catch (error) {
+      expect((error as Error).message).to.be.deep.equal(output);
+      expect((error as Error).message).to.be.deep.equal(output);
+    }
+    Sinon.restore();
+  });
 });

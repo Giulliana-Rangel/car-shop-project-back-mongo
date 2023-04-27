@@ -122,4 +122,51 @@ describe('Testing Cars route', function () {
 
     Sinon.restore();
   });
+
+  it('Should delete a car', async function () {
+    const id = '634852326b35b59438fbea2f';
+
+    Sinon.stub(Model, 'findByIdAndDelete').resolves(null);
+
+    const service = new CarService();
+    const result = await service.removeById(id);
+
+    expect(result).to.be.deep.equal(null);
+
+    Sinon.restore();
+  });
+
+  it('Exception fails: invalid id', async function () {
+    const id = 'nãoÉId';
+    const output = 'Invalid mongo id';
+
+    Sinon.stub(Model, 'findById').resolves({});
+    
+    try {
+      const service = new CarService();
+      await service.findById(id);
+      await service.removeById(id);
+    } catch (error) {
+      expect((error as Error).message).to.be.deep.equal(output);
+    }
+    Sinon.restore();
+  });
+  
+  it('Exception fails: not found', async function () {
+    const idFake = '634852326b35b59438aaaaaa';
+    const output = 'Car not found';
+
+    Sinon.stub(Model, 'findById').resolves({});
+    Sinon.stub(Model, 'findByIdAndDelete').resolves({});
+
+    try {
+      const service = new CarService();
+      await service.findById(idFake);
+      await service.removeById(idFake);
+    } catch (error) {
+      expect((error as Error).message).to.be.deep.equal(output);
+      expect((error as Error).message).to.be.deep.equal(output);
+    }
+    Sinon.restore();
+  });
 });
