@@ -2,6 +2,9 @@ import { Request, Response } from 'express';
 import ICar from '../Interfaces/ICar';
 import CarService from '../Services/CarService';
 
+const carNotFound = 'Car not found';
+const invalidId = 'Invalid mongo id';
+
 export default class CarController {
   private req: Request;
   private res: Response;
@@ -42,12 +45,12 @@ export default class CarController {
       const { id } = this.req.params;      
       const byId = await this.service.findById(id);
       if (!byId) {
-        return this.res.status(404).json({ message: 'Car not found' });
+        return this.res.status(404).json({ message: carNotFound });
       }
       return this.res.status(200).json(byId);
     } catch (error) {
       console.log(error);
-      return this.res.status(422).json({ message: 'Invalid mongo id' });
+      return this.res.status(422).json({ message: invalidId });
     }
   }
 
@@ -57,12 +60,26 @@ export default class CarController {
       const car: ICar = { ...this.req.body };
       const update = await this.service.updateById(id, car);
       if (!update) {
-        return this.res.status(404).json({ message: 'Car not found' });
+        return this.res.status(404).json({ message: carNotFound });
       }
       return this.res.status(200).json(update);
     } catch (error) {
       console.log(error);
-      return this.res.status(422).json({ message: 'Invalid mongo id' });
+      return this.res.status(422).json({ message: invalidId });
     } 
+  }
+
+  public async removeCar() {
+    try {
+      const { id } = this.req.params;
+      const remove = await this.service.removeById(id);
+      if (!remove) {
+        return this.res.status(404).json({ message: carNotFound });
+      }
+      return this.res.status(204).end();
+    } catch (error) {
+      console.log(error);
+      return this.res.status(422).json({ message: invalidId });
+    }
   }
 }

@@ -3,6 +3,8 @@ import Car from '../Domains/Car';
 import ICar from '../Interfaces/ICar';
 import CarODM from '../Models/CarODM';
 
+const invalidId = 'Invalid mongo id';
+
 export default class CarService {
   private createCarDomain(car: ICar | null): Car | null {
     if (car) {
@@ -26,15 +28,22 @@ export default class CarService {
   }
 
   public async findById(id: string) {
-    if (!isValidObjectId(id)) throw new Error('Invalid mongo id');
+    if (!isValidObjectId(id)) throw new Error(invalidId);
     const carODM = new CarODM();
     const byId = await carODM.findbyId(id);
     return this.createCarDomain(byId);
   }
   public async updateById(id: string, car: ICar) {
-    if (!isValidObjectId(id)) throw new Error('Invalid mongo id');
+    if (!isValidObjectId(id)) throw new Error(invalidId);
     const carODM = new CarODM();
     const update = await carODM.update(id, car);
     return this.createCarDomain(update);
+  }
+
+  public async removeById(id: string) {
+    if (!isValidObjectId(id)) throw new Error(invalidId);
+    const carODM = new CarODM();
+    const remove = await carODM.remove(id);
+    return this.createCarDomain(remove);
   }
 }
