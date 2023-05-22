@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import ICar from '../Interfaces/ICar';
 import CarService from '../Services/CarService';
 
@@ -8,30 +8,31 @@ const invalidId = 'Invalid mongo id';
 export default class CarController {
   private req: Request;
   private res: Response;
+  private next: NextFunction;
   private service: CarService;
 
-  constructor(req: Request, res: Response) {
+  constructor(req: Request, res: Response, next: NextFunction) {
     this.req = req;
     this.res = res;
+    this.next = next;
     this.service = new CarService();
   }
 
   public async createCarRegister() {
-    const car: ICar = {
-      model: this.req.body.model,
-      year: this.req.body.year,
-      color: this.req.body.color,
-      status: this.req.body.status,
-      buyValue: this.req.body.buyValue,
-      doorsQty: this.req.body.doorsQty,
-      seatsQty: this.req.body.seatsQty,
-    };
+    // const car: ICar = {
+    //   model: this.req.body.model,
+    //   year: this.req.body.year,
+    //   color: this.req.body.color,
+    //   status: this.req.body.status,
+    //   buyValue: this.req.body.buyValue,
+    //   doorsQty: this.req.body.doorsQty,
+    //   seatsQty: this.req.body.seatsQty,
+    // };
     try {
-      const newCarRegister = await this.service.createCarRegister(car);
+      const newCarRegister = await this.service.createCarRegister(this.req.body);
       return this.res.status(201).json(newCarRegister);
     } catch (error) {
-      console.log(error);
-      return this.res.status(500).json({ message: (error as Error).message });
+      this.next(error);
     }
   }
 
@@ -49,8 +50,9 @@ export default class CarController {
       }
       return this.res.status(200).json(byId);
     } catch (error) {
-      console.log(error);
-      return this.res.status(422).json({ message: invalidId });
+      this.next(error);
+      // console.log(error);
+      // return this.res.status(422).json({ message: invalidId });
     }
   }
 
@@ -72,14 +74,14 @@ export default class CarController {
   public async removeCar() {
     try {
       const { id } = this.req.params;
+      console.log('controllerCar', id);
       const remove = await this.service.removeById(id);
       if (!remove) {
         return this.res.status(404).json({ message: carNotFound });
       }
       return this.res.status(204).end();
     } catch (error) {
-      console.log(error);
-      return this.res.status(422).json({ message: invalidId });
+      this.next(error);
     }
   }
 }

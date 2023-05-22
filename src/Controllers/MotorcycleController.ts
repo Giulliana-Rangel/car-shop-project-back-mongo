@@ -11,11 +11,11 @@ export default class MotorcycleController {
   private next: NextFunction;
   private service: MotorcycleService;
 
-  constructor(req: Request, res: Response, next: NextFunction) {
+  constructor(req: Request, res: Response, next: NextFunction, service = new MotorcycleService()) {
     this.req = req;
     this.res = res;
     this.next = next;
-    this.service = new MotorcycleService();
+    this.service = service;
   }
   public async createMotorcycle() {
     const motorcycle: IMotorcycle = {

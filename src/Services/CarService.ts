@@ -1,5 +1,6 @@
 import { isValidObjectId } from 'mongoose';
 import Car from '../Domains/Car';
+import InvalidMongoId from '../errors/InvalidMongoId';
 import ICar from '../Interfaces/ICar';
 import CarODM from '../Models/CarODM';
 
@@ -41,7 +42,7 @@ export default class CarService {
   }
 
   public async removeById(id: string) {
-    if (!isValidObjectId(id)) throw new Error(invalidId);
+    if (!isValidObjectId(id)) throw new InvalidMongoId(invalidId);
     const carODM = new CarODM();
     const remove = await carODM.remove(id);
     return this.createCarDomain(remove);

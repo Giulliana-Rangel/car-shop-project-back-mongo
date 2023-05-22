@@ -4,7 +4,7 @@ import Sinon from 'sinon';
 import MotorcycleService from '../../../src/Services/MotorcycleService';
 
 describe('Testing Motorcycles route', function () {
-  it('If is possicle to create a new moto register', async function () {
+  it('If is possible to create a new moto register', async function () {
     const input = {
       model: 'Kawasaki',
       year: 2005,
